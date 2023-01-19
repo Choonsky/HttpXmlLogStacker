@@ -33,14 +33,8 @@ public class HttpXmlLogStackerApp {
                 break;
             }
 
-            // TO REMOVE
-            System.out.println("SourceFileNames = " + sourceFileNames);
-
             if (sourceFileNames.size() > 0) {
                 for (String fileName : sourceFileNames) {
-
-                    // TO REMOVE
-                    System.out.println("Doing file " + fileName);
 
                     Set<String> stackedFileNames = new HashSet<>();
 
@@ -49,9 +43,6 @@ public class HttpXmlLogStackerApp {
                                 .filter(name -> name.substring(0, name.indexOf('-'))
                                         .equals(fileName.substring(0, fileName.indexOf('-')))).collect(Collectors.toSet());
                     }
-
-                    // TO REMOVE
-                    System.out.println("stackedFileNames = " + stackedFileNames);
 
                     int firstFileNumber = stackedFileNames.size();
 
@@ -77,9 +68,6 @@ public class HttpXmlLogStackerApp {
 
     private static Set<String> getFileList(String dir) {
 
-        // TO DELETE
-        System.out.println("dir = " + dir);
-
         try (Stream<Path> stream = Files.list(Path.of(dir))) {
             return stream
                     .filter(file -> !Files.isDirectory(file))
@@ -95,9 +83,6 @@ public class HttpXmlLogStackerApp {
 
     private static void addStackedFiles(String fileName, int firstFileNumber) {
 
-        // TO DELETE
-        System.out.println("Adding stack: fileName = " + fileName + ", firstFileNumber = " + firstFileNumber);
-
         int count = firstFileNumber;
         List<String> currentStack = new ArrayList<>();
 
@@ -111,15 +96,8 @@ public class HttpXmlLogStackerApp {
             e.printStackTrace();
         }
 
-        // TO DELETE
-        System.out.println("Read lines size: " + logFileContent.size());
-
         // writing stack files of 100 lines each
         for (int line = 1 + (100 * (firstFileNumber - 1)); line < logFileContent.size(); line++) {
-
-            // To DELETE
-            System.out.println("line = " + line + ", content(line) = " + logFileContent.get(line));
-
             currentStack.add(logFileContent.get(line));
             if (line % 100 == 0) {
                 writeStack(fileName, count, currentStack);
@@ -132,13 +110,11 @@ public class HttpXmlLogStackerApp {
 
     private static void writeStack(String fileName, int count, List<String> currentStack) {
 
-        // TO DELETE
-        System.out.println("Writing file: " + targetDirectory + File.separator + fileName.substring(0, fileName.indexOf('.'))
-                + "-" + String.format("%04d", count) + ".log, currentStack.size = " + currentStack.size());
+        String targetFileName = fileName.substring(0, fileName.indexOf('.')) + "-" + String.format("%04d", count) +
+                ".log";
 
         // locating/creating file and directory
-        Path targetFile = Paths.get(targetDirectory + File.separator + fileName.substring(0, fileName.indexOf('.'))
-                + "-" + String.format("%04d", count) + ".log");
+        Path targetFile = Paths.get(targetDirectory + File.separator + targetFileName);
         try {
             Files.createDirectories(targetFile.getParent()); // create if not exists yet
             if (!Files.exists(targetFile))
@@ -155,6 +131,6 @@ public class HttpXmlLogStackerApp {
             System.out.println("Exception " + e.getMessage() + " while writing to file!");
             e.printStackTrace();
         }
-        System.out.println("Files written!");
+        System.out.println("File " + targetFileName + " is written/updated successfully!");
     }
 }
